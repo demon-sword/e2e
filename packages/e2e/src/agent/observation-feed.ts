@@ -112,6 +112,13 @@ export class ObservationFeed {
     return this.newest;
   }
 
+  /** Whether the step's newest observation was truncated, when the step captured one. */
+  get observationTruncated(): boolean | undefined {
+    const newest = this.newest;
+    if (newest === undefined) return undefined;
+    return newest.kind === 'pixels' ? true : newest.truncated;
+  }
+
   /** A trace may only describe a step observed with semantic evidence throughout. */
   get traceEligible(): boolean {
     return this.semanticHistory;

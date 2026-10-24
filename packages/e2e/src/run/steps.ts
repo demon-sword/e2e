@@ -162,6 +162,13 @@ export interface StepAgentDetails {
   visionInput?: boolean;
   visionDegraded?: VisionDegradation;
   /**
+   * True when the step's latest semantic observation was truncated: the
+   * engine stopped listing nodes at its limit, or the observation byte
+   * budget cut it further. A blocked step with this set read a cut tree,
+   * not proof that a control is absent.
+   */
+  observationTruncated?: boolean;
+  /**
    * True when `vision: 'only'` withheld the semantic tree, leaving the masked
    * screenshot as the model's only evidence. `metrics.observationBytes` is then
    * zero, because the observation contributed nothing to the request.
@@ -201,6 +208,7 @@ export interface StepRecord {
   visionInput?: boolean;
   visionDegraded?: VisionDegradation;
   visionOnly?: boolean;
+  observationTruncated?: boolean;
   viewport?: { width: number; height: number; scale: number };
   metrics?: StepMetrics;
   cache?: StepCacheRecord;
@@ -682,6 +690,7 @@ export class StepRecorder {
     if (details.visionInput !== undefined) current.visionInput = details.visionInput;
     if (details.visionDegraded !== undefined) current.visionDegraded = details.visionDegraded;
     if (details.visionOnly !== undefined) current.visionOnly = details.visionOnly;
+    if (details.observationTruncated !== undefined) current.observationTruncated = details.observationTruncated;
     if (details.turns !== undefined) current.turns = details.turns;
   }
 

@@ -177,6 +177,7 @@ export interface ReportStep {
   visionInput?: boolean | undefined;
   visionDegraded?: VisionDegradation | undefined;
   visionOnly?: boolean | undefined;
+  observationTruncated?: boolean | undefined;
   viewport?: { width: number; height: number; scale: number } | undefined;
   metrics?: StepMetrics | undefined;
   cache?: StepCacheRecord | undefined;

@@ -382,6 +382,8 @@ The built-in agent offers these tools while no secret has been filled:
   batches, keeping the newest two.
 - A step that sent pixels records `visionInput: true` and
   `metrics.pixelBytes`.
+- A step whose latest observation was cut at the engine or byte limit records
+  `observationTruncated: true`, so a `blocked` step reads as a cut tree rather than a missing control.
 
 A secret filled during the step withholds every later screenshot from the
 model (`PIXEL_TAINTED`). A step that opens on a tainted viewport offers none of the

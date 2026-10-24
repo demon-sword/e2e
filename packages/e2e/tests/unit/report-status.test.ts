@@ -11,6 +11,7 @@ import { uuidv7 } from '../../src/internal/ids.ts';
 import { buildReport, type BuildReportOptions } from '../../src/report/build.ts';
 import type { AttemptRecord, ResultRecord, SerialAttemptRecord, SerialGroupRecord } from '../../src/run/records.ts';
 import type { StepRecord } from '../../src/run/steps.ts';
+import { StepRecorder } from '../../src/run/steps.ts';
 import { assertValidReport } from '../helpers/report-schema.ts';
 
 const AT = '2026-01-01T00:00:00.000Z';
@@ -262,6 +263,33 @@ describe('error stacks', () => {
     expect(json).toContain('expected the dashboard');
     expect(json).not.toContain('"stack"');
     expect(json).not.toContain('/Users/someone');
+  });
+});
+
+describe('observation truncation', () => {
+  async function reported(flag: boolean | undefined) {
+    const recorder = new StepRecorder('attempt');
+    await recorder.run('agent', 'agent.act', 'open the dashboard', async () => {
+      recorder.attachAgentDetails({
+        metrics: { modelCalls: 1, actionSteps: 0, observationBytes: 512, contextBytes: 0, ledgerBytes: 0 },
+        observationRevision: 'rev-1',
+        ...(flag === undefined ? {} : { observationTruncated: flag }),
+      });
+    });
+    const plain = failedResult(blocked, 'truncated');
+    const result: ResultRecord = {
+      ...plain,
+      attempts: [{ ...plain.attempts[0]!, steps: [...recorder.all()] }],
+    };
+    return build({ results: [result] }).run.results[0]!.attempts[0]!.steps[0]!;
+  }
+
+  it('carries observationTruncated from the step record into the report', async () => {
+    expect((await reported(true)).observationTruncated).toBe(true);
+  });
+
+  it('leaves observationTruncated off the report when the step saw a whole tree', async () => {
+    expect((await reported(undefined)).observationTruncated).toBeUndefined();
   });
 });
 
