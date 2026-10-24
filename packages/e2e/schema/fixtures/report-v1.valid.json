@@ -160,7 +160,8 @@
                     ],
                     "outcome": "Tapped #n19.\nScreen changes: 4 added."
                   }
-                ]
+                ],
+                "observationTruncated": true
               },
               {
                 "id": "018f0f5c-7b2a-7abc-8abc-0123456789ab:1",

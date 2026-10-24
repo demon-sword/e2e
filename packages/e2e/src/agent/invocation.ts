@@ -168,6 +168,8 @@ export class Invocation {
 
   private readonly usage = new ModelUsage();
   private observationRevision: string | undefined;
+  /** Whether the latest observation was truncated; absent until one is captured. */
+  private observationTruncated: boolean | undefined;
   /** Absent when capture failed before the judge received evidence. */
   private explanation: string | undefined;
   private visionInput = false;
@@ -246,6 +248,8 @@ export class Invocation {
       this.metrics.observationBytes = Math.max(this.metrics.observationBytes, observation.bytes);
     }
     this.observationRevision = observation.revision;
+    // A pixels-only observation carries no tree at all, which reads as truncated the way the executor's view does.
+    this.observationTruncated = observation.kind === 'pixels' ? true : observation.truncated;
     if (pixels || observation.kind === 'pixels') this.recordPixels(observation);
     return observation;
   }
@@ -471,6 +475,7 @@ export class Invocation {
       ...(this.observationRevision !== undefined
         ? { observationRevision: this.observationRevision }
         : {}),
+      ...(this.observationTruncated !== undefined ? { observationTruncated: this.observationTruncated } : {}),
       ...(this.explanation !== undefined ? { explanation: this.explanation } : {}),
       ...(this.visionInput ? { visionInput: true } : {}),
       ...(this.treeWithheld ? { visionOnly: true } : {}),

@@ -476,6 +476,7 @@ class ActDispatch {
       ...(this.explanation !== undefined ? { explanation: this.explanation } : {}),
       ...(this.spec.vision === 'only' && this.feed.pixelsShown ? { visionOnly: true } : {}),
       ...(latest !== undefined ? { observationRevision: latest.revision } : {}),
+      ...(this.feed.observationTruncated !== undefined ? { observationTruncated: this.feed.observationTruncated } : {}),
       ...(this.turns !== undefined && this.turns.length > 0 ? { turns: this.turns } : {}),
       ...this.feed.visionReport(),
     });
